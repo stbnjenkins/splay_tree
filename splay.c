@@ -34,14 +34,12 @@ void insert_node(tree_node_ptr *root, int key){
                 parent = parent->left;
                 continue;
             }else{
-                if(key > parent->key){
-                    if(key == parent->right->key){
-                        parent->right->parent = parent;
-                        return;
-                    }
-                    parent = parent->right;
-                    continue;
+                if(key == parent->right->key){
+                    parent->right->parent = parent;
+                    return;
                 }
+                parent = parent->right;
+                continue;
             }
         }
     }
@@ -62,7 +60,29 @@ void destroy_tree(tree_node_ptr root){
 // delete
 //
 
+// splay
+/*
+    at the end should update root.
 
+ /   params: target_node, tree_node_ptr *root
+
+    ehile target_node not root, do splaysplay.c:152:39: error: expect
+*/
+// void splay(tree_node_ptr target_node, tree_node_ptr *root){ 
+//     while(target_node->parent){ //When is 0 (NULL) cycle will stop
+//         // find rotation
+//         if(!(target_node->parent->parent)){
+//             if(target_node->parent->left == target_node){
+//                 zig(target_node);
+//             }else{
+//                 zag(target_node);
+//             }
+
+//         }
+//         // decide which rotation
+//     }
+//     // set new root;
+// }
 
 
 // TRAVERSAL
@@ -86,52 +106,94 @@ void preorder_traverse_recursive(tree_node_ptr root, void (*f)(tree_node_ptr) ){
 
 
 // ROTATIONS
+// Assumes no duplicates keys. Unpredictable behavior if there are.
 
-void zig(tree_node_ptr target_node){ // still can reduce mem footprint
-    tree_node_ptr temp = target_node->right; 
+void zig(tree_node_ptr target_node, tree_node_ptr *root){
+    // If target_node is NULL, or already root, do nothing
+    if(!target_node || !(target_node->parent))return;
+
+    // If target_node's parent is root, set target_node's parent to NULL
+    // else, setup the corresponding parent.
     tree_node_ptr parent = target_node->parent;
-    target_node->parent = parent->parent;
+    if(!(target_node->parent->parent)){
+        target_node->parent = NULL;
+    }else{
+        // means have grandfather
+        if(target_node->key < parent->parent->key){
+            parent->parent->left = target_node;
+        }else{
+            parent->parent->right = target_node;
+        }
+        target_node->parent = parent->parent;
+    }
+    parent->parent = target_node; //ok
+    if(target_node->right){  //err, check if null
+        target_node->right->parent = parent;
+    }
+    parent->left = target_node->right;
     target_node->right = parent;
-    if(parent->parent) parent->parent->right = target_node; // check 4 null
-    temp->parent = parent;
-    parent->left = temp;
-    parent->parent = target_node;   
-    return;
+
+    // updating root
+    tree_node_ptr it = target_node;
+    while(it->parent){
+        it = it->parent;
+    }
+    *root = it;
 }
 
-void zag(tree_node_ptr target_node){ // still can reduce mem footprint
-    tree_node_ptr temp = target_node->left; 
+void zag(tree_node_ptr target_node, tree_node_ptr *root){
+    // If target_node is NULL, or already root, do nothing
+    if(!target_node || !(target_node->parent))return;
+
+    // If target_node's parent is root, set target_node's parent to NULL
+    // else, setup the corresponding parent.
     tree_node_ptr parent = target_node->parent;
-    target_node->parent = parent->parent;
+    if(!(target_node->parent->parent)){
+        target_node->parent = NULL;
+    }else{
+        // means have grandfather
+        if(target_node->key < parent->parent->key){
+            parent->parent->left = target_node;
+        }else{
+            parent->parent->right = target_node;
+        }
+        target_node->parent = parent->parent;
+    }
+    parent->parent = target_node; //ok
+    if(target_node->left){  //err, check if null
+        target_node->left->parent = parent;
+    }
+    parent->right = target_node->left;
     target_node->left = parent;
-    if(parent->parent) parent->parent->left = target_node;
-    parent->parent->left = target_node;
-    temp->parent = parent;
-    parent->right = temp;
-    parent->parent = target_node;   
-    return;
+
+    // updating root
+    tree_node_ptr it = target_node;
+    while(it->parent){
+        it = it->parent;
+    }
+    *root = it;
 }
 
-void zigzag(tree_node_ptr target_node){
-    zag(target_node);
-    zig(target_node);
+
+void zigzag(tree_node_ptr target_node, tree_node_ptr* root){
+    zag(target_node, root);
+    zig(target_node, root);
 }
 
-void zagzig(tree_node_ptr target_node){
-    zig(target_node);
-    zag(target_node);
+void zagzig(tree_node_ptr target_node, tree_node_ptr* root){
+    zig(target_node, root);
+    zag(target_node, root);
 }
 
-void zagzag(tree_node_ptr target_node){
-    zag(target_node);
-    zag(target_node);
+void zagzag(tree_node_ptr target_node, tree_node_ptr* root){
+    zag(target_node, root);
+    zag(target_node, root);
 }
 
-void zigzig(tree_node_ptr target_node){
-    zig(target_node);
-    zig(target_node);
+void zigzig(tree_node_ptr target_node, tree_node_ptr* root){
+    zig(target_node, root);
+    zig(target_node, root);
 }
-
 
 
 // MISCELLANEOUS
