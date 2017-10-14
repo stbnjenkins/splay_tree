@@ -6,7 +6,7 @@
 int main(int argc, char** argv){
     printf("Starting program\n");
     parseFile("tests/simple_test.txt");
-    
+
     // tree_node_ptr root = NULL;
     // insert_node(&root, 10);
     // insert_node(&root, 15);
@@ -16,11 +16,6 @@ int main(int argc, char** argv){
     // insert_node(&root, 6);
     // insert_node(&root, 8);
     // preorder_traverse_recursive(root, &print_node);
-    // printf("Rotating...\n");
-    // zigzag(root->left->right, &root);
-    // preorder_traverse_recursive(root, &print_node);
-    // printf("Press key to delete tree...\n");
-    // getchar();
     // destroy_tree(root); //fix root, leaking memory
 
 
