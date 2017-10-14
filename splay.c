@@ -47,6 +47,31 @@ void insert_node(tree_node_ptr *root, int key){
     //if equal, do nothing
 }
 
+// Find
+find_result* find(tree_node_ptr root, int key){
+    find_result* result = (find_result*) malloc(sizeof(find_result));
+    int depth = 0;
+    while(root){ // root not null
+        if(root->key == key){
+            result->depth = depth;
+            result->node = root;
+            printf("FOUND %d\n", key);
+            return result;
+        }else{
+            if(key < root->key){
+                root = root->left;
+                depth++;
+                continue;
+            }else{
+                root = root->right;
+                depth++;
+                continue;
+            }
+        }
+    }
+    printf("DIDNT FIND %d\n", key);
+    return NULL;
+}
 // Destroy
 void destroy_tree(tree_node_ptr root){
     if(!root)

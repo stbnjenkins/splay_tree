@@ -6,6 +6,11 @@ typedef struct TREE_NODE{
     struct TREE_NODE *left, *right, *parent;
 }tree_node, *tree_node_ptr;
 
+typedef struct FIND_RESULT{
+    int depth;
+    tree_node_ptr node; // NULL if doesnt belong to tree
+} find_result;
+
 
 // Functions
 void insert_node(tree_node_ptr*, int);
