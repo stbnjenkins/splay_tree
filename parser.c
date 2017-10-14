@@ -56,15 +56,17 @@ void parseFile(char* filename){
     int key;
     while(!feof(fp)){
         fscanf(fp, "%c %d\n", &command, &key);
+        printf("%c %d\n", command, key);
         switch(command){
+            
             case '#':
                 if(root){
                     // process data
-                    printf("Nodes: %d\n", number_of_nodes);
-                    printf("Number of find ops: %d\n", find_ops);
-                    printf("*****************\n");
-                    preorder_traverse_recursive(root, &print_node);
-                    printf("*****************\n\n");
+                    // printf("Nodes: %d\n", number_of_nodes);
+                    // printf("Number of find ops: %d\n", find_ops);
+                    // printf("*****************\n");
+                    // preorder_traverse_recursive(root, &print_node);
+                    // printf("*****************\n\n");
                     // free memory for next tree
                     destroy_tree(root);
                 }
@@ -74,18 +76,22 @@ void parseFile(char* filename){
                 number_of_nodes = key;
                 find_ops = 0; //counter of find operations to take average at the end
                 break;
-            case 'I':
-                insert_node(&root, key);
-                // printf("Inserting node with key %d\n", key);
-                break;
+
             case 'F':
                 // start clock
                 // find
-                r = find(root, key);
+                r = find(&root, key);
+                if(r)printf("Found %d in depth %d.\n", r->node->key, r->depth);
                 find_ops++;
                 // end clock, report to var
                 // printf("Finding node with key %d\n", key);
                 break;
+
+            case 'I':
+                insert_node(&root, key);
+                // printf("Inserting node with key %d\n", key);
+                break;
+
             default:
                 fprintf(stderr, "Invalid file format. Exiting...\n");
                 exit(1);
@@ -94,11 +100,11 @@ void parseFile(char* filename){
     // end of file process last tree data
     if(root){
         // process data
-        printf("Nodes: %d\n", number_of_nodes);
-        printf("Number of find ops: %d\n", find_ops);
-        printf("*****************\n");
-        preorder_traverse_recursive(root, &print_node);
-        printf("*****************\n\n");
+        // printf("Nodes: %d\n", number_of_nodes);
+        // printf("Number of find ops: %d\n", find_ops);
+        // printf("*****************\n");
+        // preorder_traverse_recursive(root, &print_node);
+        // printf("*****************\n\n");
         // free memory for next tree
         destroy_tree(root);
     }

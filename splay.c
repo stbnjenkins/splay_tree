@@ -99,22 +99,25 @@ void insert_node(tree_node_ptr *root, int key){
 // }
 
 // Find
-find_result* find(tree_node_ptr root, int key){
-    tree_node_ptr iter = root;
+find_result* find(tree_node_ptr* root, int key){
+    tree_node_ptr iter = *root;
+    tree_node_ptr iter_papa = NULL;
     find_result* result = (find_result*) malloc(sizeof(find_result));
     int depth = 0;
     while(iter){ // root not null
         if(iter->key == key){
             result->depth = depth;
             result->node = iter;
-            splay(iter, &root);
+            splay(iter, root);
             return result;
         }else{
             if(key < iter->key){
+                iter_papa = iter;
                 iter = iter->left;
                 depth++;
                 continue;
             }else{
+                iter_papa = iter;
                 iter = iter->right;
                 depth++;
                 continue;
@@ -122,7 +125,7 @@ find_result* find(tree_node_ptr root, int key){
         }
     }
     // splay closest node
-    splay(iter, &root);
+    splay(iter_papa, root);
     return NULL;
 }
 // Destroy
