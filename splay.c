@@ -6,68 +6,123 @@
 
 // BASIC OPERATIONS
 
-// Insert
 void insert_node(tree_node_ptr *root, int key){
-
-    if(!*root){
+    
+    if(!(*root)){ // Case empty tree
         tree_node_ptr node = (tree_node_ptr) malloc(sizeof(tree_node));
         node->key = key;
         node->left = node->right = node->parent = NULL;
         *root = node;
         return;
-    }else{
-        if(key < (*root)->key){
-            insert_node(&(*root)->left, key);
-        }else{
-            if(key > (*root)->key){
-                insert_node(&(*root)->right, key);
-            }
-        }
-        // Set up parent nodes
-        tree_node_ptr parent = (*root);
-        while(parent){
-            if(key < parent->key){
-                if(key == parent->left->key){
-                    parent->left->parent = parent;
-                    return;
-                }
-                parent = parent->left;
+    }else{ //traverse tree till right position
+        tree_node_ptr iter = (*root);
+        tree_node_ptr iter_papa = NULL;
+        while(iter){
+            if(key < iter->key){
+                iter_papa = iter;
+                iter = iter->left;
                 continue;
             }else{
-                if(key == parent->right->key){
-                    parent->right->parent = parent;
-                    return;
+                if(key > iter->key){
+                    iter_papa = iter;
+                    iter = iter->right; 
+                    continue;
+                }else{
+                    //equal do nothin
+                    // splay con ese nodo y return;
+                    
+                    return; //still should splay
                 }
-                parent = parent->right;
-                continue;
             }
         }
-    }
+        //insert, set parent and splay
+        tree_node_ptr node = (tree_node_ptr) malloc(sizeof(tree_node));
+        node->key = key;
+        node->left = node->right = NULL;
+        node->parent = iter_papa;
 
-    //if equal, do nothing
+        if(key < iter_papa->key){
+            iter_papa->left = node;
+        }else{
+            if(key > iter_papa->key){
+                iter_papa->right = node;
+            }   
+        }
+
+        //Splay
+        // print_node(node);
+        splay(node, root);
+    }
 }
+
+// Insert NOTE: recursive, should change
+// void insert_node_old(tree_node_ptr *root, int key){
+
+//     if(!*root){
+//         tree_node_ptr node = (tree_node_ptr) malloc(sizeof(tree_node));
+//         node->key = key;
+//         node->left = node->right = node->parent = NULL;
+//         *root = node;
+//         return;
+//     }else{
+//         if(key < (*root)->key){
+//             insert_node(&(*root)->left, key);
+//         }else{
+//             if(key > (*root)->key){
+//                 insert_node(&(*root)->right, key);
+//             }
+//         }
+//         // Set up parent nodes
+//         tree_node_ptr parent = (*root);
+//         while(parent){
+//             if(key < parent->key){
+//                 if(key == parent->left->key){
+//                     parent->left->parent = parent;
+//                     return;
+//                 }
+//                 parent = parent->left;
+//                 continue;
+//             }else{
+//                 if(key == parent->right->key){
+//                     parent->right->parent = parent;
+//                     return;
+//                 }
+//                 parent = parent->right;
+//                 continue;
+//             }
+//         }
+//         // void splay(tree_node_ptr target_node, tree_node_ptr *root)
+//         // splay((*root),&parent);
+//     }
+
+//     //if equal, do nothing
+// }
 
 // Find
 find_result* find(tree_node_ptr root, int key){
+    tree_node_ptr iter = root;
     find_result* result = (find_result*) malloc(sizeof(find_result));
     int depth = 0;
-    while(root){ // root not null
-        if(root->key == key){
+    while(iter){ // root not null
+        if(iter->key == key){
             result->depth = depth;
-            result->node = root;
+            result->node = iter;
+            splay(iter, &root);
             return result;
         }else{
-            if(key < root->key){
-                root = root->left;
+            if(key < iter->key){
+                iter = iter->left;
                 depth++;
                 continue;
             }else{
-                root = root->right;
+                iter = iter->right;
                 depth++;
                 continue;
             }
         }
     }
+    // splay closest node
+    splay(iter, &root);
     return NULL;
 }
 // Destroy
@@ -92,6 +147,7 @@ void destroy_tree(tree_node_ptr root){
     ehile target_node not root, do splaysplay.c:152:39: error: expect
 */
 void splay(tree_node_ptr target_node, tree_node_ptr *root){ 
+    // preorder_traverse_recursive(*root, &print_node);
     while(target_node->parent){ //When is 0 (NULL) cycle will stop
         // find rotation
         if(!(target_node->parent->parent)){ 
@@ -106,29 +162,31 @@ void splay(tree_node_ptr target_node, tree_node_ptr *root){
             }
         }else{
             // decide which rotation
-            /// else
-            //zigzag(root->left->right, &root);
             tree_node_ptr grandpa = target_node->parent->parent; 
+            if(grandpa->left){
+                if(grandpa->left->left == target_node){
+                    zigzig(target_node, root);
+                    continue;
+                }
+    
+                if(grandpa->left->right == target_node){
+                    zigzag(target_node, root);
+                    continue;
+                }
+            }
             
-            if(grandpa->left->left == target_node){
-                zigzig(target_node, root);
-                continue;
+            if(grandpa->right){
+                if(grandpa->right->right == target_node){
+                    zagzag(target_node, root);
+                    continue;
+                }
+    
+                if(grandpa->right->left == target_node){
+                    zagzig(target_node, root);
+                    continue;
+                }
             }
-
-            if(grandpa->left->right == target_node){
-                zigzag(target_node, root);
-                continue;
-            }
-
-            if(grandpa->right->right == target_node){
-                zagzag(target_node, root);
-                continue;
-            }
-
-            if(grandpa->right->left == target_node){
-                zagzig(target_node, root);
-                continue;
-            }
+            //what if not?
         }
     } // end while
 }

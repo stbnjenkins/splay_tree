@@ -24,5 +24,6 @@ void zigzag(tree_node_ptr, tree_node_ptr*);
 void zagzig(tree_node_ptr, tree_node_ptr*);
 void zagzag(tree_node_ptr, tree_node_ptr*);
 void zigzig(tree_node_ptr, tree_node_ptr*);
+void splay(tree_node_ptr, tree_node_ptr*);
 
 #endif //TREE_NODE_H
