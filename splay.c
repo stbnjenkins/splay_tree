@@ -55,7 +55,6 @@ find_result* find(tree_node_ptr root, int key){
         if(root->key == key){
             result->depth = depth;
             result->node = root;
-            printf("FOUND %d\n", key);
             return result;
         }else{
             if(key < root->key){
@@ -69,7 +68,6 @@ find_result* find(tree_node_ptr root, int key){
             }
         }
     }
-    printf("DIDNT FIND %d\n", key);
     return NULL;
 }
 // Destroy
@@ -93,21 +91,47 @@ void destroy_tree(tree_node_ptr root){
 
     ehile target_node not root, do splaysplay.c:152:39: error: expect
 */
-// void splay(tree_node_ptr target_node, tree_node_ptr *root){ 
-//     while(target_node->parent){ //When is 0 (NULL) cycle will stop
-//         // find rotation
-//         if(!(target_node->parent->parent)){
-//             if(target_node->parent->left == target_node){
-//                 zig(target_node);
-//             }else{
-//                 zag(target_node);
-//             }
+void splay(tree_node_ptr target_node, tree_node_ptr *root){ 
+    while(target_node->parent){ //When is 0 (NULL) cycle will stop
+        // find rotation
+        if(!(target_node->parent->parent)){ 
+            
+            //if parent is root
+            if(target_node->parent->left == target_node){
+                zig(target_node, root);
+                return;
+            }else{
+                zag(target_node, root);
+                return;
+            }
+        }else{
+            // decide which rotation
+            /// else
+            //zigzag(root->left->right, &root);
+            tree_node_ptr grandpa = target_node->parent->parent; 
+            
+            if(grandpa->left->left == target_node){
+                zigzig(target_node, root);
+                continue;
+            }
 
-//         }
-//         // decide which rotation
-//     }
-//     // set new root;
-// }
+            if(grandpa->left->right == target_node){
+                zigzag(target_node, root);
+                continue;
+            }
+
+            if(grandpa->right->right == target_node){
+                zagzag(target_node, root);
+                continue;
+            }
+
+            if(grandpa->right->left == target_node){
+                zagzig(target_node, root);
+                continue;
+            }
+        }
+    } // end while
+}
 
 
 // TRAVERSAL
