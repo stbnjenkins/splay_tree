@@ -9,7 +9,7 @@
 void insert_node(tree_node_ptr *root, int key){
     
     if(!(*root)){ // Case empty tree
-        tree_node_ptr node = (tree_node_ptr) malloc(sizeof(tree_node));
+        tree_node_ptr node = (tree_node_ptr) malloc(sizeof(tree_node)); //too many mallocs, change solution
         node->key = key;
         node->left = node->right = node->parent = NULL;
         *root = node;
@@ -30,7 +30,6 @@ void insert_node(tree_node_ptr *root, int key){
                 }else{
                     //equal do nothin
                     // splay con ese nodo y return;
-                    
                     return; //still should splay
                 }
             }
@@ -50,64 +49,20 @@ void insert_node(tree_node_ptr *root, int key){
         }
 
         //Splay
-        // print_node(node);
         splay(node, root);
     }
 }
 
-// Insert NOTE: recursive, should change
-// void insert_node_old(tree_node_ptr *root, int key){
-
-//     if(!*root){
-//         tree_node_ptr node = (tree_node_ptr) malloc(sizeof(tree_node));
-//         node->key = key;
-//         node->left = node->right = node->parent = NULL;
-//         *root = node;
-//         return;
-//     }else{
-//         if(key < (*root)->key){
-//             insert_node(&(*root)->left, key);
-//         }else{
-//             if(key > (*root)->key){
-//                 insert_node(&(*root)->right, key);
-//             }
-//         }
-//         // Set up parent nodes
-//         tree_node_ptr parent = (*root);
-//         while(parent){
-//             if(key < parent->key){
-//                 if(key == parent->left->key){
-//                     parent->left->parent = parent;
-//                     return;
-//                 }
-//                 parent = parent->left;
-//                 continue;
-//             }else{
-//                 if(key == parent->right->key){
-//                     parent->right->parent = parent;
-//                     return;
-//                 }
-//                 parent = parent->right;
-//                 continue;
-//             }
-//         }
-//         // void splay(tree_node_ptr target_node, tree_node_ptr *root)
-//         // splay((*root),&parent);
-//     }
-
-//     //if equal, do nothing
-// }
-
 // Find
-find_result* find(tree_node_ptr* root, int key){
+find_result find(tree_node_ptr* root, int key){
     tree_node_ptr iter = *root;
     tree_node_ptr iter_papa = NULL;
-    find_result* result = (find_result*) malloc(sizeof(find_result));
+    find_result result;
     int depth = 0;
     while(iter){ // root not null
         if(iter->key == key){
-            result->depth = depth;
-            result->node = iter;
+            result.depth = depth;
+            result.node = iter;
             splay(iter, root);
             return result;
         }else{
@@ -124,31 +79,66 @@ find_result* find(tree_node_ptr* root, int key){
             }
         }
     }
-    // splay closest node
+    // splay closest node if node was not found
     splay(iter_papa, root);
-    return NULL;
+    result.depth = depth;
+    result.node = NULL;
+    return result;
 }
-// Destroy
-void destroy_tree(tree_node_ptr root){
+// Destroy whole tree
+// Traverses tree in postorder, deleting element
+void destroy_tree_recursive(tree_node_ptr root){
     if(!root)
     {
-        destroy_tree(root->right);
-        destroy_tree(root->left);
+        destroy_tree_recursive(root->right);
+        destroy_tree_recursive(root->left);
         free(root);
     }
+}
+
+void destroy_tree(tree_node_ptr* root){
+    tree_node_ptr iter = *root;
+    tree_node_ptr iter_papa = NULL;
+    while(iter){ // root not null
+        if(!(iter->left || iter->right)){
+            if(iter_papa){
+                if(iter->key < iter_papa->key){
+                    iter_papa->left = NULL;
+                }else{
+                    iter_papa->right = NULL;
+                }
+            }else{ // root and only node of tree
+                free(iter);
+                *root = NULL;
+                return;
+            }
+            free(iter);
+            iter = iter_papa;
+            iter_papa = iter_papa->parent;
+            continue;
+        }
+        if(iter->left){
+            iter_papa = iter;
+            iter = iter->left;
+            continue;
+        }
+        if(iter->right){
+            iter_papa = iter;
+            iter = iter->right;
+            continue;
+        }
+        iter = iter->parent;
+        free(iter);
+    }
+    if(iter){
+        free(iter);
+    } //?
 }
 
 // delete
 //
 
 // splay
-/*
-    at the end should update root.
-
- /   params: target_node, tree_node_ptr *root
-
-    ehile target_node not root, do splaysplay.c:152:39: error: expect
-*/
 void splay(tree_node_ptr target_node, tree_node_ptr *root){ 
     // preorder_traverse_recursive(*root, &print_node);
     while(target_node->parent){ //When is 0 (NULL) cycle will stop
@@ -244,7 +234,7 @@ void zig(tree_node_ptr target_node, tree_node_ptr *root){
     target_node->right = parent;
 
     // updating root
-    tree_node_ptr it = target_node;
+    tree_node_ptr it = *root;
     while(it->parent){
         it = it->parent;
     }
@@ -277,7 +267,7 @@ void zag(tree_node_ptr target_node, tree_node_ptr *root){
     target_node->left = parent;
 
     // updating root
-    tree_node_ptr it = target_node;
+    tree_node_ptr it = *root;
     while(it->parent){
         it = it->parent;
     }
@@ -305,10 +295,53 @@ void zigzig(tree_node_ptr target_node, tree_node_ptr* root){
     zig(target_node, root);
 }
 
+////////////////////////////////////////
+// for granted that Y and Z not null
+// void zigzag2(tree_node_ptr target_node, tree_node_ptr* root){
+//     tree_node_ptr A, B, C, D, x, y, z;
+    
+//     x = target_node;
+//     y = target_node->parent;
+//     z = target_node->parent->parent;
+
+//     A = x->left;
+//     B = x->right;
+//     C = y->parent;
+//     D = z->parent;
+
+//     C->parent = z;
+//     D->parent = z;
+//     z->left = C;
+//     z->right = D;
+
+//     B->parent = y;
+//     z->parent = y;
+//     y->right = z;
+//     y->left = B;
+
+//     y->parent = x;
+
+// }
+
+// void zagzag2(tree_node_ptr target_node, tree_node_ptr* root){
+//     zag(target_node, root);
+//     zag(target_node, root);
+// }
+
+// void zagzig2(tree_node_ptr target_node, tree_node_ptr* root){
+//     zig(target_node, root);
+//     zag(target_node, root);
+// }
+
+// void zigzig2(tree_node_ptr target_node, tree_node_ptr* root){
+//     zig(target_node, root);
+//     zig(target_node, root);
+// }
+
 
 // MISCELLANEOUS
 
-// print a node
+// Print a node
 void print_node(tree_node_ptr node){
     printf("Key: %d\tParent key: %d\n", node->key, node->parent == NULL ? -1 : node->parent->key);
 }
