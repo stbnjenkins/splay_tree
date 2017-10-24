@@ -1,6 +1,8 @@
 #ifndef TREE_NODE_H
 #define TREE_NODE_H
 
+extern bool naive_flag;  /* Declaration of the variable */
+
 typedef struct TREE_NODE{
     int key;
     struct TREE_NODE *left, *right, *parent;

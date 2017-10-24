@@ -5,11 +5,10 @@
 
 
 // BASIC OPERATIONS
-
 void insert_node(tree_node_ptr *root, int key){
     
     if(!(*root)){ // Case empty tree
-        tree_node_ptr node = (tree_node_ptr) malloc(sizeof(tree_node)); //too many mallocs, change solution
+        tree_node_ptr node = (tree_node_ptr) malloc(sizeof(tree_node));
         node->key = key;
         node->left = node->right = node->parent = NULL;
         *root = node;
@@ -29,7 +28,6 @@ void insert_node(tree_node_ptr *root, int key){
                     continue;
                 }else{
                     //equal do nothin
-                    // splay con ese nodo y return;
                     return; //still should splay
                 }
             }
@@ -140,9 +138,10 @@ void destroy_tree(tree_node_ptr* root){
 
 // splay
 void splay(tree_node_ptr target_node, tree_node_ptr *root){ 
-    // preorder_traverse_recursive(*root, &print_node);
-    while(target_node->parent){ //When is 0 (NULL) cycle will stop
+    while(target_node->parent){ // Stop when target_node is the root of tree
         // find rotation
+
+        // Make single last rotation to get to the root
         if(!(target_node->parent->parent)){ 
             
             //if parent is root
@@ -286,58 +285,14 @@ void zagzig(tree_node_ptr target_node, tree_node_ptr* root){
 }
 
 void zagzag(tree_node_ptr target_node, tree_node_ptr* root){
-    zag(target_node, root);
+    zag(target_node->parent, root);
     zag(target_node, root);
 }
 
 void zigzig(tree_node_ptr target_node, tree_node_ptr* root){
-    zig(target_node, root);
+    zig(target_node->parent, root);
     zig(target_node, root);
 }
-
-////////////////////////////////////////
-// for granted that Y and Z not null
-// void zigzag2(tree_node_ptr target_node, tree_node_ptr* root){
-//     tree_node_ptr A, B, C, D, x, y, z;
-    
-//     x = target_node;
-//     y = target_node->parent;
-//     z = target_node->parent->parent;
-
-//     A = x->left;
-//     B = x->right;
-//     C = y->parent;
-//     D = z->parent;
-
-//     C->parent = z;
-//     D->parent = z;
-//     z->left = C;
-//     z->right = D;
-
-//     B->parent = y;
-//     z->parent = y;
-//     y->right = z;
-//     y->left = B;
-
-//     y->parent = x;
-
-// }
-
-// void zagzag2(tree_node_ptr target_node, tree_node_ptr* root){
-//     zag(target_node, root);
-//     zag(target_node, root);
-// }
-
-// void zagzig2(tree_node_ptr target_node, tree_node_ptr* root){
-//     zig(target_node, root);
-//     zag(target_node, root);
-// }
-
-// void zigzig2(tree_node_ptr target_node, tree_node_ptr* root){
-//     zig(target_node, root);
-//     zig(target_node, root);
-// }
-
 
 // MISCELLANEOUS
 
