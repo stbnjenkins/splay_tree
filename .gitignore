@@ -3,6 +3,7 @@ bin/*
 
 # R Studio
 .Rhistory
+.RData
 
 # Prerequisites
 *.d
