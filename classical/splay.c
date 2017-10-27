@@ -28,6 +28,7 @@ void insert_node(tree_node_ptr *root, int key){
                     continue;
                 }else{
                     //equal do nothin
+                    splay(iter, root);
                     return; //still should splay
                 }
             }
@@ -97,15 +98,16 @@ void destroy_tree_recursive(tree_node_ptr root){
 void destroy_tree(tree_node_ptr* root){
     tree_node_ptr iter = *root;
     tree_node_ptr iter_papa = NULL;
-    while(iter){ // root not null
+    while(iter){ // iter not null
+        // if has no child
         if(!(iter->left || iter->right)){
-            if(iter_papa){
+            if(iter_papa){ //if leave
                 if(iter->key < iter_papa->key){
                     iter_papa->left = NULL;
                 }else{
                     iter_papa->right = NULL;
                 }
-            }else{ // root and only node of tree
+            }else{ // root of tree and no children
                 free(iter);
                 *root = NULL;
                 return;
@@ -128,13 +130,7 @@ void destroy_tree(tree_node_ptr* root){
         iter = iter->parent;
         free(iter);
     }
-    if(iter){
-        free(iter);
-    } //?
 }
-
-// delete
-//
 
 // splay
 void splay(tree_node_ptr target_node, tree_node_ptr *root){ 
@@ -178,7 +174,6 @@ void splay(tree_node_ptr target_node, tree_node_ptr *root){
                     continue;
                 }
             }
-            //what if not?
         }
     } // end while
 }
@@ -225,8 +220,8 @@ void zig(tree_node_ptr target_node, tree_node_ptr *root){
         }
         target_node->parent = parent->parent;
     }
-    parent->parent = target_node; //ok
-    if(target_node->right){  //err, check if null
+    parent->parent = target_node;
+    if(target_node->right){ 
         target_node->right->parent = parent;
     }
     parent->left = target_node->right;
@@ -258,8 +253,8 @@ void zag(tree_node_ptr target_node, tree_node_ptr *root){
         }
         target_node->parent = parent->parent;
     }
-    parent->parent = target_node; //ok
-    if(target_node->left){  //err, check if null
+    parent->parent = target_node;
+    if(target_node->left){ 
         target_node->left->parent = parent;
     }
     parent->right = target_node->left;
