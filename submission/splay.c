@@ -3,6 +3,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+// Compiling: gcc -o splay.out splay.c
+// ./generator -b -s 58 | ./splay.out classical classical_result.csv
+
+
 // tree_node.h
 
 // Struct to represent each node of splay tree
