@@ -17,24 +17,26 @@ int main(int argc, char** argv){
 
     // Variable definitions
     FILE *csv;
-    int avg_depth_of_search, number_of_nodes, find_ops;
+    int avg_depth_of_search, number_of_nodes, find_ops; // For tracking stats
     tree_node_ptr root = NULL;
     find_result r;    
     char command;
     int key;
 
-    // Opening file
+    // Create CSV for results
     csv = fopen(filename, "w+");
     if (!csv) { //If error opening file
         fprintf(stderr, "Can't create output file result.csv\n");
         exit(1);
     }
-    printf("Files opened succesfully.\n");
+    printf("Files created succesfully.\n");
     fprintf(csv,"n,depth\n");
 
+    // Read from std input until the end. Expects each line to be
+    // as <char> <int>
     while(!feof(stdin) && scanf("%c %d\n", &command, &key) == 2){
         switch(command){
-            case '#':
+            case '#': // Save stats of last tree, and reset everything for new test run
                 if(root){
                     fprintf(csv,"%d,%.4lf\n", number_of_nodes, (double)avg_depth_of_search/find_ops);
                     destroy_tree(&root); // Free memory for next tree
@@ -47,14 +49,13 @@ int main(int argc, char** argv){
                 avg_depth_of_search = 0;
                 break;
 
-            case 'F':
-                // find
+            case 'F': // Find operation
                 r = find(&root, key);
                 avg_depth_of_search += r.depth;
                 find_ops++;                
                 break;
 
-            case 'I':
+            case 'I': // Insert operation
                 insert_node(&root, key);
                 break;
 

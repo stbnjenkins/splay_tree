@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "tree_node.h"
+#include "../tree_node.h"
 
 
 
